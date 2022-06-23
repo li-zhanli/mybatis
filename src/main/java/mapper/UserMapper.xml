@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper标签是当前配置文件的根标签 -->
+<!-- namespace属性：表示命名空间，用来设定当前Mapper配置文件的唯一标识，将来在Java程序中通过namespace属性的值来定位到这个配置文件 -->
+<!-- namespace属性值设置的方式：名字可以随便取,但是推荐以相对应的Mapper接口的全类名,例如com.thr.mapper.UserMapper -->
+<mapper namespace="mapper.UserMapper">
+    <resultMap id="userMap" type="bean.User">
+        <!-- 与主键字段的对应，property对应实体属性，column对应表字段 -->
+        <id property="userId" column="id"/>
+        <!-- 与非主键字段的对应，property对应实体属性，column对应表字段 -->
+        <result property="userName" column="username"/>
+        <result property="userAge" column="age"/>
+        <result property="userSex" column="sex"/>
+        <result property="userAddress" column="address"/>
+    </resultMap>
+    <!-- 查询所有用户 -->
+    <select id="selectAllUser" resultType="bean.User">
+        select * from t_user
+    </select>
+
+    <!--  通过Id查询用户-->
+    <select id="selectUserById" resultType="bean.User">
+        select * from t_user where id = #{id}
+    </select>
+    <!--模糊查询，根据username字段查询用户-->
+    <select id="selectUserByName" resultType="bean.User">
+        select * from t_user where username like "%"#{name}"%"
+    </select>
+    <!-- 添加用户-->
+    <insert id="insertUser">
+        insert into t_user(id, username, age, sex, address,department)
+        values (#{id}, #{username}, #{age}, #{sex}, #{address}, null);
+    </insert>
+    <!-- 根据Id更新用户 -->
+    <update id="updateUser">
+        update t_user set username = #{username},
+                          age = #{age},sex = #{sex},address = #{address} where id = #{id}
+    </update>
+    <!-- 根据Id删除用户 -->
+    <delete id="deleteUser">
+        delete from t_user where id = #{id}
+    </delete>
+
+    <select id="selectUserByListUser"  resultType="User">
+    select * from t_user
+    <where>
+        <foreach collection="ids" item="id" open="id in (" close=")" separator=",">
+            #{id}
+        </foreach>
+    </where>
+    </select>
+
+    <select id="selectAll" resultType="int">
+        select count(1)from t_user
+    </select>
+
+    <!--<select id="selectAllUserUser" resultType="user">-->
+    <select id="selectAllUserUser" resultMap="userMap1">
+        select * from t_user
+    </select>
+
+    <resultMap id="userMap1" type="bean.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+        <result property="dep.id" column="dep_id"/>
+        <result property="dep.name" column="dep_name"/>
+    </resultMap>
+    <resultMap id="userMap2" type="bean.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+        <association property="dep" javaType="bean.Dep">
+            <id property="id" column="dep_id"/>
+            <id property="name" column="dep_name"/>
+        </association>
+    </resultMap>
+    <resultMap id="userMap3" type="bean.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+        <association property="dep" javaType="bean.Dep">
+            <id property="id" column="dep_id"/>
+            <id property="name" column="dep_name"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getUserByAssociation" resultMap="userMap2">
+        select * from t_user left join dep on t_user.department = dep.dep_id where t_user.id = #{id}
+    </select>
+
+    <select id="selectTwoCondition" resultType="user">
+        select * from t_user where id = #{param1} and age = #{param2}
+    </select>
+</mapper>
