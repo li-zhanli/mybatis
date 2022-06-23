@@ -1,6 +1,6 @@
 package bean;
 
-import org.apache.ibatis.type.TypeHandler;
+
 
 public class User {
     private Integer id;
